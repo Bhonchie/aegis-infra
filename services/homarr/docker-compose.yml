@@ -1,0 +1,19 @@
+networks:
+  mgmt-net:
+    external: true
+
+services:
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: homarr
+    restart: unless-stopped
+    ports:
+      - 7575:7575
+    volumes:
+      - /opt/services/homarr/configs:/app/data/configs
+      - /opt/services/homarr/icons:/app/public/icons
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - mgmt-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

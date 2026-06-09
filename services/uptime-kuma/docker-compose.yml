@@ -1,0 +1,15 @@
+networks:
+  mgmt-net:
+    external: true
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - /opt/services/uptime-kuma/data:/app/data
+    networks:
+      - mgmt-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

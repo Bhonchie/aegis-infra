@@ -1,0 +1,23 @@
+{
+  "groups": {
+    "group:owners": [
+      "reynaja93@gmail.com"
+    ],
+    "group:guests": []
+  },
+  "hosts": {
+    "aegis": "100.97.183.96"
+  },
+  "acls": [
+    {
+      "action": "accept",
+      "src":    ["group:owners"],
+      "dst":    ["*:*"]
+    },
+    {
+      "action": "accept",
+      "src":    ["group:guests"],
+      "dst":    ["aegis:443"]
+    }
+  ]
+}

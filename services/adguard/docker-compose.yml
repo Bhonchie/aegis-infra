@@ -1,0 +1,20 @@
+networks:
+  adguard-net:
+    external: true
+
+services:
+  adguard:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    restart: unless-stopped
+    volumes:
+      - /opt/services/adguard/config:/opt/adguardhome/conf
+      - /opt/services/adguard/data:/opt/adguardhome/work
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3000:3000/tcp"
+    networks:
+      - adguard-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

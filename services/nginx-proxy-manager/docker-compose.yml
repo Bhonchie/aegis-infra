@@ -1,0 +1,30 @@
+networks:
+  proxy-net:
+    external: true
+  media-net:
+    external: true
+  finance-net:
+    external: true
+    name: finance-hub_finance-net
+  mgmt-net:
+    external: true
+
+services:
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 81:81
+    volumes:
+      - /opt/services/nginx-proxy-manager/data:/data
+      - /opt/services/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy-net
+      - media-net
+      - finance-net
+      - mgmt-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

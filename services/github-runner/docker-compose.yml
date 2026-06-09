@@ -1,0 +1,16 @@
+services:
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: github-runner
+    restart: unless-stopped
+    environment:
+      - RUNNER_NAME=aegis
+      - REPO_URL=${GITHUB_REPO_URL}
+      - RUNNER_TOKEN=${GITHUB_RUNNER_TOKEN}
+      - RUNNER_WORKDIR=/tmp/runner/work
+      - LABELS=self-hosted,linux,x64
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/runner:/tmp/runner
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"

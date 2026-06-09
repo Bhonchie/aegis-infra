@@ -1,0 +1,19 @@
+networks:
+  mgmt-net:
+    external: true
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/services/portainer/data:/data
+    networks:
+      - mgmt-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

@@ -1,0 +1,15 @@
+services:
+  homer:
+    image: b4bz/homer:v24.05.1
+    container_name: homer
+    volumes:
+      - ./config.yml:/www/assets/config.yml:ro
+    networks:
+      - proxy-net
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+networks:
+  proxy-net:
+    external: true
