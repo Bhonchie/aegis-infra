@@ -234,9 +234,11 @@ aegis-infra/
 
 ## Pending (Before Inviting Guests)
 
-1. MFA on Tailscale account ⚠️ high priority
-2. MFA on Cloudflare account ⚠️ high priority
-3. Verify BGW320 IP Passthrough is OFF
-4. Save Cloudflare API token to password manager
-5. Install Tailscale on wife's devices
-6. End-to-end cellular test: WiFi off → https://project-aegis.io over Tailscale
+1. ~~MFA on Tailscale account~~ ✅ 2026-06-15 (Google 2-Step Verification)
+2. MFA on Cloudflare account ⚠️ high priority — BLOCKED by Google SSO (no account password). Set a password first via "Forgot password" (verify email), then My Profile → Authentication → enable TOTP + save backup codes.
+3. Verify BGW320 IP Passthrough is OFF — Aegis confirmed behind NAT 2026-06-15; gateway UI check still pending (http://192.168.1.254 → Firewall → IP Passthrough → Allocation Mode = Off)
+4. ~~Save Cloudflare API token to password manager~~ ✅ 2026-06-15
+5. Install Tailscale on wife's devices (deferred — low priority per Josh)
+6. ~~End-to-end cellular test: WiFi off → https://project-aegis.io over Tailscale~~ ✅ 2026-06-15 (Homer loaded over LTE)
+
+**Also hardened 2026-06-15:** Tailscale device approval enabled; key expiry disabled on the `aegis` node.

@@ -2,7 +2,7 @@
 
 **Server:** GEEKOM A7 MAX | **Hostname:** `aegis` | **IP:** `192.168.1.100`
 **OS:** Ubuntu Server 26.04 LTS | **Stack:** Docker + Docker Compose + Portainer
-**Last Updated:** 2026-06-10
+**Last Updated:** 2026-06-15
 
 ---
 
@@ -134,15 +134,18 @@ Goal: VPN-gated remote access. Owners get full LAN access via Tailscale. Guests 
 ## ⏳ Pending Items
 
 ### Security (do before inviting guests)
-- [ ] MFA on Tailscale account ⚠️
-- [ ] MFA on Cloudflare account ⚠️
-- [ ] BGW320 IP Passthrough confirmed OFF
-- [ ] Cloudflare API token saved in password manager
+- [x] MFA on Tailscale account ✅ 2026-06-15 (Google 2-Step Verification — Tailscale auth rides Google SSO)
+- [x] Tailscale device approval enabled ✅ 2026-06-15 (new devices require manual approval)
+- [x] Key expiry disabled on `aegis` node ✅ 2026-06-15 (server won't drop off tailnet; clients keep expiry)
+- [x] Cloudflare API token saved in password manager ✅ 2026-06-15
+- [ ] MFA on Cloudflare account ⚠️ — BLOCKED: account uses Google SSO so it has no password, and Cloudflare requires a password before TOTP can be enabled. Fix: set a password via "Forgot password" on the login page (verify email first), then My Profile → Authentication → Two-Factor → enable TOTP + save backup codes.
+- [ ] BGW320 IP Passthrough confirmed OFF — Aegis confirmed behind NAT 2026-06-15 (private local IP, distinct public IP → passthrough not pointed at Aegis); full Off-state pending gateway UI check (http://192.168.1.254 → Firewall → IP Passthrough → Allocation Mode = Off)
 
 ### Tailscale Device Coverage
 - [ ] Tailscale installed on wife's devices
-- [ ] End-to-end test: cellular on phone (WiFi off) → https://project-aegis.io
-- [ ] Subnet routing verified from off-network (ping 192.168.1.1)
+- [x] End-to-end test: cellular on phone (WiFi off) → https://project-aegis.io ✅ 2026-06-15 (Homer loaded over LTE)
+- [x] Subnet route 192.168.1.0/24 advertised + approved — server-verified (in PrimaryRoutes) ✅ 2026-06-15
+  - [ ] Off-network ping to a LAN device (e.g. 192.168.1.1) still untested — access test above only exercises the Tailscale IP, not the subnet route
 
 ### Known Issues
 - `github-runner` container crash-looping — deferred fix
@@ -215,3 +218,7 @@ Goal: VPN-gated remote access. Owners get full LAN access via Tailscale. Guests 
 | 2026-06-10 | tyche.local cert uploaded to NPM, proxy host added — tyche.local restored |
 | 2026-06-10 | portainer.home proxy host fixed (NPM → 192.168.1.100:9000) |
 | 2026-06-10 | home-infra docs merged into aegis-infra repo |
+| 2026-06-15 | Stale `D:\Josh\Projects\home-infra\` folder deleted — fully superseded by aegis-infra/docs |
+| 2026-06-15 | Tailscale hardened: Google MFA confirmed, device approval ON, key expiry disabled on aegis node |
+| 2026-06-15 | Access path server-verified: project-aegis.io HTTP 200 (Homer), jellyfin 302, homarr 307; LE wildcard cert valid to Sep 7; `--accept-dns=false` confirmed (CorpDNS:false) |
+| 2026-06-15 | 🎉 End-to-end remote access CONFIRMED — project-aegis.io loaded over cellular (WiFi off) via Tailscale |
