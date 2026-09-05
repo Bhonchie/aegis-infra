@@ -29,3 +29,13 @@ services:
         url: "https://jellyfin.project-aegis.io"
         target: "_blank"
         tag: "media"
+
+  - name: "Finance"
+    icon: "fas fa-piggy-bank"
+    items:
+      - name: "Tyche"
+        subtitle: "Family Finance Hub"
+        logo: "https://cdn.jsdelivr.net/gh/NX211/homer-icons@master/png/wallet.png"
+        url: "https://tyche.project-aegis.io"
+        target: "_blank"
+        tag: "finance"

@@ -1,0 +1,7 @@
+# One email per line. This file's real, live copy (authenticated-emails.txt,
+# no .example suffix) lives ONLY on Aegis's disk -- never committed to git,
+# never baked into a Docker image. To onboard or remove someone: SSH into
+# Aegis, edit that file directly, then `docker compose restart` in this
+# directory (a few seconds, no impact on Tyche's own backend/frontend/db).
+reynaja93@gmail.com
+reynafam15@gmail.com

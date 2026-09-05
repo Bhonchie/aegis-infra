@@ -4,3 +4,4 @@
 *.crt
 data/
 logs/
+authenticated-emails.txt
