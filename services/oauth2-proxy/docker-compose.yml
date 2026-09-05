@@ -37,6 +37,14 @@ services:
       - OAUTH2_PROXY_COOKIE_HTTPONLY=true
       - OAUTH2_PROXY_REDIRECT_URL=https://tyche.project-aegis.io/oauth2/callback
       - OAUTH2_PROXY_REVERSE_PROXY=true
+      # Only trust X-Forwarded-* headers from proxy-net itself (NPM is the
+      # only realistic sender) -- without this, --reverse-proxy defaults to
+      # trusting ANY connecting IP to supply these headers, which could be
+      # used to spoof client IP/protocol if anything else ever reached this
+      # container directly. proxy-net's actual subnet, confirmed via
+      # `docker network inspect proxy-net`.
+      - OAUTH2_PROXY_REAL_CLIENT_IP_HEADER=X-Forwarded-For
+      - OAUTH2_PROXY_TRUSTED_PROXY_IPS=172.20.0.0/16
       # OAUTH2_PROXY_CLIENT_ID / _CLIENT_SECRET / _COOKIE_SECRET come from .env
       # (gitignored) -- never hardcode secrets here.
       # No --skip-auth-route / --skip-auth-regex, ever -- any such exception
@@ -69,6 +77,14 @@ services:
       - OAUTH2_PROXY_COOKIE_HTTPONLY=true
       - OAUTH2_PROXY_REDIRECT_URL=https://project-aegis.io/oauth2/callback
       - OAUTH2_PROXY_REVERSE_PROXY=true
+      # Only trust X-Forwarded-* headers from proxy-net itself (NPM is the
+      # only realistic sender) -- without this, --reverse-proxy defaults to
+      # trusting ANY connecting IP to supply these headers, which could be
+      # used to spoof client IP/protocol if anything else ever reached this
+      # container directly. proxy-net's actual subnet, confirmed via
+      # `docker network inspect proxy-net`.
+      - OAUTH2_PROXY_REAL_CLIENT_IP_HEADER=X-Forwarded-For
+      - OAUTH2_PROXY_TRUSTED_PROXY_IPS=172.20.0.0/16
       # Same CLIENT_ID / CLIENT_SECRET / COOKIE_SECRET as oauth2-proxy-tyche
       # (from .env) -- the shared cookie secret + shared cookie domain is
       # what makes one login cover both entry points.
