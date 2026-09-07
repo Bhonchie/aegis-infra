@@ -2,7 +2,7 @@
 
 **Server:** GEEKOM A7 MAX | **Hostname:** `aegis` | **IP:** `192.168.1.100`
 **OS:** Ubuntu Server 26.04 LTS | **Stack:** Docker + Docker Compose + Portainer
-**Last Updated:** 2026-06-15
+**Last Updated:** 2026-09-07
 
 ---
 
@@ -131,6 +131,42 @@ Goal: VPN-gated remote access. Owners get full LAN access via Tailscale. Guests 
 
 ---
 
+## Phase 1d — Tyche Remote Access (Tailscale + Google OAuth) ⏳ IN PROGRESS (started 2026-09-05)
+
+**Goal:** locked-down remote access to Family Finance Hub ("Tyche") — Tailscale network membership, then Google login restricted to exactly two accounts (`reynaja93@gmail.com`, `reynafam15@gmail.com`), no exceptions for being on home WiFi. Full design rationale, every decision made with Josh, and the complete build plan live in the Claude Code plan file this was built from: `C:\Users\reyna\.claude\plans\okay-my-dude-crispy-frost.md` (title: "Locked-Down Remote Access to Tyche via Tailscale + Google OAuth") — read that first if picking this up cold, this section is a status snapshot, not the design doc.
+
+### Architecture
+
+```
+Tailscale ON → tyche.project-aegis.io ──► oauth2-proxy-tyche:4180 ──► finance-hub-frontend:443 (unchanged)
+            → project-aegis.io (existing) ──► oauth2-proxy-homer:4180 ──► homer:8080 (unchanged, not yet cut over)
+
+Both oauth2-proxy instances share one allowlist file + one cookie secret
+(--cookie-domain=.project-aegis.io) so a single Google login covers both entry points.
+jellyfin.project-aegis.io stays a separate proxy host, untouched, Tailscale-ACL-only (no Google auth).
+```
+
+### What's actually done, verified working
+
+- [x] `aegis-infra` branch `feature/tyche-remote-access` — pushed, not yet merged. Two commits: the oauth2-proxy service + Homer tile + ACL update, then a follow-up hardening fix (`--trusted-proxy-ip` scoped to `proxy-net`'s real subnet `172.20.0.0/16`, closing a real "trust any IP's X-Forwarded-* headers" warning oauth2-proxy logs by default).
+- [x] `family-finance-hub` branch `feature/tyche-remote-oauth-support` — PR #49, CORS updated to allow `https://tyche.project-aegis.io`.
+- [x] Google Cloud OAuth app created (project `aegis-homelab`) — External/Testing, both `reynaja93@gmail.com`/`reynafam15@gmail.com` added as test users, both redirect URIs registered, `project-aegis.io` added as an Authorized Domain (hit and fixed a real "OAuth configuration is incomplete" error caused by not doing this first).
+- [x] Cloudflare DNS: `tyche.project-aegis.io` A record added (DNS-only/gray-cloud → `100.97.183.96`), confirmed resolving correctly.
+- [x] `/opt/services/oauth2-proxy/` live on Aegis — `docker-compose.yml`, real `.env` (Client ID/Secret/cookie secret), real `authenticated-emails.txt` (both emails). Both containers (`oauth2-proxy-tyche`, `oauth2-proxy-homer`) up and healthy.
+- [x] NPM proxy host for `tyche.project-aegis.io` → `oauth2-proxy-tyche:4180`, using the existing `*.project-aegis.io` LE wildcard cert.
+- [x] **End-to-end remote login CONFIRMED 2026-09-06/07** — real device, Tailscale on, hit `tyche.project-aegis.io`, got oauth2-proxy's sign-in page, logged in with `reynaja93@gmail.com`, landed in Tyche correctly.
+
+### What's still pending
+
+- [x] **Sarah's Tailscale enrollment** ✅ 2026-09-07 — hit a real gotcha along the way: signing into the Tailscale app with a personal Gmail account doesn't join an existing tailnet automatically, it creates a brand-new separate one. Fixed via Tailscale admin console → Users → Invite external users → `reynafam15@gmail.com`; she accepted the invite, signed in again, device (`iphone-14`, `100.71.218.9`) then showed up correctly and was approved.
+- [x] Updated ACL pasted into the Tailscale admin console ✅ 2026-09-07 — verified Sarah actually has the full owner grant (not just guest-tier `aegis:443`) by confirming she can reach `http://192.168.1.100:81` (NPM admin) from her phone, Tailscale on / WiFi off.
+- [x] Cut the **existing** `project-aegis.io` NPM proxy host over to route through `oauth2-proxy-homer:4180` ✅ 2026-09-07 (was `homer:8080` direct/unauthenticated). Verified: `jellyfin.project-aegis.io` unaffected (still its own normal 302 login redirect, separate proxy host); `project-aegis.io` now correctly shows oauth2-proxy's sign-in page. **Shared-cookie-domain design confirmed working end-to-end**: after already being logged in via Tyche, visiting `project-aegis.io` required no second Google prompt — one login genuinely covers both entry points.
+- [x] Retire `tyche.local`'s open, no-login LAN access ✅ 2026-09-07 — proxy host disabled in NPM (not deleted, kept as an easy rollback path). Verified: `tyche.local` now fails to connect at all, while an unrelated host (`jellyfin.project-aegis.io`) still works fine over the same LAN path — confirms the disable was clean and specific, not a broader NPM/network issue.
+- [ ] Login notification channel — not yet decided. Recommended default (not yet actioned): ntfy.sh, since nothing else in this stack currently does homelab push notifications. Open question for Josh.
+- [ ] Merge both PRs (`aegis-infra` `feature/tyche-remote-access`, `family-finance-hub` #49) once everything above is verified end-to-end.
+
+---
+
 ## ⏳ Pending Items
 
 ### Security (do before inviting guests)
@@ -142,7 +178,7 @@ Goal: VPN-gated remote access. Owners get full LAN access via Tailscale. Guests 
 - [ ] BGW320 IP Passthrough confirmed OFF — Aegis confirmed behind NAT 2026-06-15 (private local IP, distinct public IP → passthrough not pointed at Aegis); full Off-state pending gateway UI check (http://192.168.1.254 → Firewall → IP Passthrough → Allocation Mode = Off)
 
 ### Tailscale Device Coverage
-- [ ] Tailscale installed on wife's devices
+- [x] Tailscale installed on wife's devices ✅ 2026-09-07 — see Phase 1d above (iPhone enrolled, invited as external user, approved, verified owner-level access)
 - [x] End-to-end test: cellular on phone (WiFi off) → https://project-aegis.io ✅ 2026-06-15 (Homer loaded over LTE)
 - [x] Subnet route 192.168.1.0/24 advertised + approved — server-verified (in PrimaryRoutes) ✅ 2026-06-15
   - [ ] Off-network ping to a LAN device (e.g. 192.168.1.1) still untested — access test above only exercises the Tailscale IP, not the subnet route
