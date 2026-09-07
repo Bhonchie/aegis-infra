@@ -158,8 +158,8 @@ jellyfin.project-aegis.io stays a separate proxy host, untouched, Tailscale-ACL-
 
 ### What's still pending
 
-- [ ] **Sarah's Tailscale enrollment** — not started as of 2026-09-07 (this directly supersedes/completes the pre-existing "Tailscale installed on wife's devices" item under Pending Items below). She needs the Tailscale client installed + signed in with `reynafam15@gmail.com`, then Josh approves her device in the Tailscale admin console.
-- [ ] Paste the updated ACL (already committed in this branch — `reynafam15@gmail.com` added to `group:owners`) into the Tailscale admin console's ACL editor — not auto-synced, always a manual step.
+- [x] **Sarah's Tailscale enrollment** ✅ 2026-09-07 — hit a real gotcha along the way: signing into the Tailscale app with a personal Gmail account doesn't join an existing tailnet automatically, it creates a brand-new separate one. Fixed via Tailscale admin console → Users → Invite external users → `reynafam15@gmail.com`; she accepted the invite, signed in again, device (`iphone-14`, `100.71.218.9`) then showed up correctly and was approved.
+- [x] Updated ACL pasted into the Tailscale admin console ✅ 2026-09-07 — verified Sarah actually has the full owner grant (not just guest-tier `aegis:443`) by confirming she can reach `http://192.168.1.100:81` (NPM admin) from her phone, Tailscale on / WiFi off.
 - [ ] Cut the **existing** `project-aegis.io` NPM proxy host over to route through `oauth2-proxy-homer:4180` (currently still pointing straight at `homer:8080`, unauthenticated) — deliberately deferred until after Tyche's own gate was proven working (done, see above), per the rollout plan's risk sequencing. Immediately re-verify `jellyfin.project-aegis.io` is unaffected after this edit (separate proxy host, should be, but it's a live edit to something existing — confirm, don't assume).
 - [ ] Retire `tyche.local`'s open, no-login LAN access (a separate existing NPM proxy host) — last step, only after everything above is confirmed working. This is a deliberate design decision (see the plan file) — "always require Google login, no home-WiFi exemption" means this old open path has to go, not stay as a parallel option.
 - [ ] Login notification channel — not yet decided. Recommended default (not yet actioned): ntfy.sh, since nothing else in this stack currently does homelab push notifications. Open question for Josh.
@@ -178,7 +178,7 @@ jellyfin.project-aegis.io stays a separate proxy host, untouched, Tailscale-ACL-
 - [ ] BGW320 IP Passthrough confirmed OFF — Aegis confirmed behind NAT 2026-06-15 (private local IP, distinct public IP → passthrough not pointed at Aegis); full Off-state pending gateway UI check (http://192.168.1.254 → Firewall → IP Passthrough → Allocation Mode = Off)
 
 ### Tailscale Device Coverage
-- [ ] Tailscale installed on wife's devices — see Phase 1d above, this is now the active blocker on Tyche remote access for Sarah
+- [x] Tailscale installed on wife's devices ✅ 2026-09-07 — see Phase 1d above (iPhone enrolled, invited as external user, approved, verified owner-level access)
 - [x] End-to-end test: cellular on phone (WiFi off) → https://project-aegis.io ✅ 2026-06-15 (Homer loaded over LTE)
 - [x] Subnet route 192.168.1.0/24 advertised + approved — server-verified (in PrimaryRoutes) ✅ 2026-06-15
   - [ ] Off-network ping to a LAN device (e.g. 192.168.1.1) still untested — access test above only exercises the Tailscale IP, not the subnet route
