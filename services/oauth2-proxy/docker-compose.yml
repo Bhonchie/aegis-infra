@@ -49,8 +49,29 @@ services:
       # (gitignored) -- never hardcode secrets here.
       # No --skip-auth-route / --skip-auth-regex, ever -- any such exception
       # reopens the unauthenticated-bypass path this whole build exists to close.
+      #
+      # Tyche's own sign-in + error pages ("Blade" design). They live in the
+      # family-finance-hub repo (auth-pages/) and are mounted read-only below;
+      # Tyche's deploy.yml restarts this container when they change (templates
+      # load at startup only). Branding is the ONLY thing this changes -- the
+      # page is still served by oauth2-proxy itself, so it adds no exception.
+      - OAUTH2_PROXY_CUSTOM_TEMPLATES_DIR=/templates
+      # Hide the oauth2-proxy version from signed-out visitors.
+      - OAUTH2_PROXY_FOOTER=-
+      # XHR to /api/* with no/expired session gets a plain 401 instead of the
+      # sign-in HTML -- Tyche's frontend reloads into the sign-in page on 401
+      # and returns to the same screen after login.
+      - OAUTH2_PROXY_API_ROUTES=^/api/
+      # Always show Google's account chooser -- shared family devices otherwise
+      # silently sign in as whoever used Google last on that browser.
+      - OAUTH2_PROXY_PROMPT=select_account
+      - OAUTH2_PROXY_COOKIE_SAMESITE=lax
+      # Explicit (it's the default): Tyche's backend refuses /api/* without
+      # X-Forwarded-Email when REQUIRE_PROXY_AUTH=true (defense in depth).
+      - OAUTH2_PROXY_PASS_USER_HEADERS=true
     volumes:
       - ./authenticated-emails.txt:/config/authenticated-emails.txt:ro
+      - /opt/finance-hub/auth-pages:/templates:ro
     networks:
       - proxy-net
       - finance-net

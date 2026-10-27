@@ -156,7 +156,7 @@ mkcert CA root (install on new devices to trust *.home): `C:\Users\reyna\AppData
 ## Finance Hub
 
 - **Project folder:** `D:\Josh\Projects\Family Finance Hub\`
-- **Live at:** https://finance.home / https://tyche.local
+- **Live at:** https://tyche.project-aegis.io (Tailscale → NPM → oauth2-proxy-tyche Google SSO → frontend). `finance.home` / `tyche.local` are retired (NPM host disabled 2026-09-07) — see `docs/progress.md` Phase 1d.
 - **Stack:** FastAPI (Python) backend + React/Vite frontend + SQLite
 - **Deployed at:** `/opt/finance-hub/` on Aegis
 - **Docker compose:** `docker compose -f /opt/finance-hub/docker-compose.yml <command>`
