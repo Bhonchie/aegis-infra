@@ -62,6 +62,7 @@ to `/tmp` as a script and run manually by Josh — sudo over non-interactive SSH
     ├── project-aegis.io         → homer:8080      (guest landing)
     ├── jellyfin.project-aegis.io → jellyfin:8096  (media)
     ├── homarr.project-aegis.io  → homarr:7575     (owner dashboard)
+    ├── apollo.project-aegis.io  → apollo-auth:4180 (Apollo kids' game, own Google SSO; repo Bhonchie/apollo)
     ├── finance.home             → finance-hub-frontend:443
     ├── portainer.home           → 192.168.1.100:9000
     └── tyche.local              → finance-hub-frontend:443
@@ -181,6 +182,7 @@ All networks are external/named (created by `scripts/create-networks.sh`):
 | `finance-hub_finance-net` | finance-hub-backend, finance-hub-frontend, NPM |
 | `media-net` | jellyfin, NPM |
 | `mgmt-net` | uptime-kuma, homarr, NPM |
+| `apollo-net` | apollo-auth, apollo-app, NPM (172.31.88.0/24, created by Apollo's bootstrap) |
 | `adguard-net` | adguardhome |
 | `bridge` | portainer (legacy) |
 
